@@ -1,5 +1,3 @@
-// Main starting point of the application
-// We do not have access to ES6 syntax when using node
 const express = require('express');
 const http = require('http');
 const bodyParser = require('body-parser');
@@ -8,19 +6,12 @@ const app = express();
 const router = require('./router');
 const mongoose = require('mongoose');
 
-//DB Setup
-// Connect to monogoDB and create new DB named auth
 mongoose.connect('mongodb://localhost:27017/auth');
 
-// App Setup
-// app.use sets up the middleware morgan and body parser
-// morgan is a logger (debugging)
-// bodyParser - parses all incoming requests as json
 app.use(morgan('combined'));
 app.use(bodyParser.json({ type: '*/*' }));
 router(app);
 
-// Server Setup
 const port = process.env.PORT || 3090;
 const server = http.createServer(app);
 server.listen(port);

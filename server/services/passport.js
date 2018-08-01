@@ -5,20 +5,12 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const LocalStrategy = require('passport-local');
 
-// Create local strategy (email - password)
-// When looking at the usernameField use the email address ( default is user ID).
 const localOptions = { usernameField: 'email' };
 const localLogin = new LocalStrategy(localOptions, function(email, password, done) {
-  // Verify this email and password, call done with the user
-  // if it is the correct email and password
-  // otherwise, call done with false
   User.findOne({ email: email }, function(err, user) {
     if (err) { return done(err); }
     if (!user) { return done(null, false); }
-
-    // compare passwords - is 'password' equal to 'user.password'
-    // take the salt, use to encrypt submitted password and compare hashed passwords
-    // If identical OK, we NEVER de-crypt our saved password.
+    
     user.comparePassword(password, function(err, isMatch) {
       if (err) { return done(err); }
       if (!isMatch) { return done(null, false); }
@@ -28,20 +20,13 @@ const localLogin = new LocalStrategy(localOptions, function(email, password, don
   });
 });
 
-// Setup options for JWT Strategy
-// look for JWT token in the header and use the secret key
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromHeader('authorization'),
   secretOrKey: config.secret
 };
 
-// Create JWT strategy
-// payload = decoded JWT token. done = callback function
 const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
-  // See if the user ID in the payload exists in our database
-  // If it does, call 'done' with that user
-  // otherwise, call done without a user object
-  User.findById(payload.sub, function(err, user) {
+ User.findById(payload.sub, function(err, user) {
     if (err) { return done(err, false); }
 
     if (user) {
@@ -52,6 +37,5 @@ const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
   });
 });
 
-// Tell passport to use this strategy
 passport.use(jwtLogin);
 passport.use(localLogin);
