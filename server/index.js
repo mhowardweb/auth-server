@@ -6,6 +6,11 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const app = express();
 const router = require('./router');
+const mongoose = require('mongoose');
+
+//DB Setup
+// Connect to monogoDB and create new DB named auth
+mongoose.connect('mongodb://localhost:27017/auth');
 
 // App Setup
 // app.use sets up the middleware morgan and body parser
